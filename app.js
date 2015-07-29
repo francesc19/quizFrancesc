@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
+//incluimos el metodo Override para poder updatear las preguntas
+var methodOverride = require('method-override');
 
 var routes = require('./routes/index');
 var app = express();
@@ -20,6 +22,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+//añadimos el metodo override para poder actualizar las preguntas (editarlas)
+app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
