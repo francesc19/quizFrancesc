@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var quizController = require('../controllers/quiz_controller');
+var commentController = require('../controllers/comment_controller');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -25,5 +26,8 @@ router.post('/quizes/create', quizController.create);
 router.get('/quizes/:quizId(\\d+)/edit', quizController.edit);
 router.put('/quizes/:quizId(\\d+)', quizController.update);      //Para actualizar preguntas en bd
 router.delete('/quizes/:quizId(\\d+)', quizController.destroy);  //Para eliminar preguntas
+
+router.get('/quizes/:quizId(\\d+)/comments/new', commentController.new); //accede al formulario de crear comentario, asociado al quiz :id.
+router.post('/quizes/:quizId(\\d+)/comments', commentController.create); //crea una entrada en la tabla comments, asociada a :quizId en Quiz
 
 module.exports = router;
