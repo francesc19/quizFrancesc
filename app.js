@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var partials = require('express-partials');
 //incluimos el metodo Override para poder updatear las preguntas
 var methodOverride = require('method-override');
+//Se importa el paquete express-session instalado con npm
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var app = express();
@@ -21,10 +23,26 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(cookieParser());
+app.use(cookieParser('Quiz 2015')); //Cookieparser: añaadir semilla 'Quiz 2015' para cifrar la cookie
+//instala MW session
+app.use(session());
 //añadimos el metodo override para poder actualizar las preguntas (editarlas)
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Helpers dinamicos:
+app.use(function(req, res, next){
+  //guardar path en session.redir para despues de login
+    if (!req.path.match(/\/login|\/logout/)) {
+    req.session.redir = req.path;
+    //guarda la ruta de cada solicitud HTTP en la variable session.redir para poder redireccionar a la vista anterior después de hacer login o logout.
+  }
+
+  //Hacer visible req.session en las vistas
+  res.locals.session = req.session;
+  //copia la sesión que está accesible en req.session en res.locals.session para que esté accesible en las vistas.
+  next();
+});
 
 app.use('/', routes);
 
