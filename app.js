@@ -40,6 +40,25 @@ app.use(function(req, res, next){
 
   //Hacer visible req.session en las vistas
   res.locals.session = req.session;
+  /*Se implementa la expiración de sesión por tiempo*/
+  //Si el usuario está más de dos minutos sin hacer un get HTTP entonces...
+  if (req.session.time){
+    //Se crea variable para saber el tiempo actual
+    var lastTime = new Date().getTime();
+    //Se crea variable para saber la diferencia de tiempo entre la actual y la última del usuario
+    var diff = lastTime - req.session.time;
+    //Si la diferencia es mayor a dos minutos
+    if (diff > 120000){ //120000 viene de 2*60*1000
+      //Se borra el último tiempo de sesión del usuario
+      delete req.session.time;
+      //Se activa el boolean que nos indica que si hay logout
+      req.session.autoLogout = true;
+      res.redirect("/logout");
+    }else{
+      //Si no se ha superado los 2 minutos la sesión del usuario pasa a ser la última consultada
+      req.session.time = lastTime;
+    }
+  };
   //copia la sesión que está accesible en req.session en res.locals.session para que esté accesible en las vistas.
   next();
 });

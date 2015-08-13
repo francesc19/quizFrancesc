@@ -33,6 +33,9 @@ exports.create = function(req, res){
     //Crear req.session.user y guardar campos id y username
     //La sesión se define por la existencia de: req.session.user
     req.session.user = {id:user.id, username:user.username};
+    //Se guarda la hora de inicio de sesión en req.session.time además creamos la variable boleana req.session.autoLogout para el mensaje de desconexión
+    req.session.time = new Date().getTime();
+    req.session.autoLogout = false;
     //Redirección a path anterior a login
     res.redirect(req.session.redir.toString());
   });
@@ -41,6 +44,11 @@ exports.create = function(req, res){
 //DELETE /logout -- Destruir sesión
 exports.destroy = function(req, res){
   delete req.session.user;
-  //Redirect a path anterior a login
-  res.redirect(req.session.redir.toString());
+  if (req.session.autoLogout){
+    //Si el boolean de login esta en true me redirige a la página de login enseñandonos el error.
+    res.redirect('/login');
+  }else{
+    //Redirect a path anterior a login
+    res.redirect(req.session.redir.toString());
+  }
 };
